@@ -1,0 +1,52 @@
+schema: spec-driven
+
+context: |
+  Frigate Review — a self-hosted, single-user web app for reviewing and correcting
+  Frigate NVR detections.
+
+  Stack: Symfony 7.4 LTS, PHP >= 8.2 with strict types, Twig, Symfony UX Twig
+  Components + Stimulus, AssetMapper (no Node build), Tailwind CSS 4, SQLite
+  (volume-mounted file) in development and production.
+
+  Built artifact: Docker image; CI builds and pushes to a private registry.
+
+  Privacy constraint: images of identifiable people must never be uploaded to
+  external services; everything is self-hosted.
+
+  Integration: the app syncs detections from the Frigate HTTP API. Original
+  Frigate metadata is never modified. Original full-resolution snapshots are
+  stored once and never overwritten or altered; separate thumbnails are
+  generated for the web UI.
+
+  A future, separate spec will define dataset export, training, and retraining
+  of the detection model Frigate/the Coral TPU uses. Out of scope for this
+  project: YOLO or COCO export, dataset packaging, training, retraining, model
+  evaluation, model deployment. Data preservation for that future work is in
+  scope: keep stable class identifiers, a configurable taxonomy, and a clean,
+  extensible data model.
+
+# Conventions
+#   UK English; sentence case for headings.
+
+# Per-artifact rules (optional)
+rules:
+  proposal:
+    - "Keep proposals tight: motivation, what changes, and capability impact."
+  specs:
+    - Describe observable behaviour with WHEN/THEN scenarios.
+  design:
+    - Record decisions and their rationale; keep it implementation-focused.
+  tasks:
+    - Each task must be verifiable.
+
+# Per-operation guidance (optional)
+# Add advisory guidance for how apply and archive work should be conducted.
+# This is separate from artifact rules above.
+# Example:
+#   operations:
+#     apply:
+#       guidance:
+#         - Keep test summaries concise
+#     archive:
+#       guidance:
+#         - Summarize the archive outcome before finishing
