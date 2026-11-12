@@ -58,7 +58,7 @@ jobs:
       # config/packages/test/doctrine.yaml, so these values are placeholders.
       - name: Create .env
         run: |
-          printf 'APP_ENV=test\nAPP_SECRET=test-secret\nDEFAULT_URI=http://localhost\nDATABASE_URL=sqlite:///:memory:\nFRIGATE_BASE_URL=http://localhost\nSNAPSHOT_STORAGE_PATH=%%kernel.project_dir%%/var/snapshots\n' > .env
+          printf 'APP_ENV=test\nAPP_SECRET=test-secret\nKERNEL_CLASS=App\\Kernel\nDEFAULT_URI=http://localhost\nDATABASE_URL=sqlite:///:memory:\nFRIGATE_BASE_URL=http://localhost\nSNAPSHOT_STORAGE_PATH=%%kernel.project_dir%%/var/snapshots\n' > .env
 
       - name: Install Composer dependencies
         run: composer install --prefer-dist --no-interaction --no-progress
