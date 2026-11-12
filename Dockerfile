@@ -46,6 +46,22 @@ RUN composer install --no-dev --no-scripts --no-autoloader --no-interaction --no
 
 COPY . .
 
+# symfony/runtime's bootEnv() throws a PathException when /app/.env does not
+# exist, and every bin/console invocation (including the auto-scripts below)
+# goes through it. The repo ships no .env (gitignored AND dockerignored), so
+# write the production one: DATABASE_URL is derived from SQLITE_DB_PATH —
+# resolved by dotenv at process start, so the runtime stage's
+# SQLITE_DB_PATH=/data/data.db ENV (and any operator override) wins.
+RUN printf '# Production defaults; real config is injected via ENV.\n\
+DATABASE_URL="sqlite:///${SQLITE_DB_PATH}"\n\
+DEFAULT_URI=http://localhost\n\
+APP_SECRET=\n' > .env
+
+# Build-time values so the cache warmup can resolve the DSN above; ENV here is
+# scoped to this stage only — the runtime stage exports its own.
+ENV SQLITE_DB_PATH=/app/var/data.db \
+    SNAPSHOT_STORAGE_PATH=/app/var/snapshots
+
 # The auto-scripts (cache:clear, assets:install, importmap:install) need the
 # application source; run them with production settings so the prod container
 # cache is warmed inside the image. Asset compilation happens in the runtime
