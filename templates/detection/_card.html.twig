@@ -1,0 +1,97 @@
+{# One detection row card (shared by the flat listing and the
+   "similar snapshots" grouped view), optionally with a bulk-selection
+   checkbox (task 5.3). Dashed grey = original Frigate box, solid green =
+   corrected box (spec "Original corrected bounding boxes distinguished"). #}
+
+{# @param App\Entity\Detection detection #}
+{# @param bool with_checkbox #}
+{# @param string|null bulk_form_id when the card's checkbox must join the bulk-classify form from outside it, the id of that form (HTML forbids nested forms) #}
+{# @param list<App\Entity\Label> assignable_labels identity labels this card's quick-classify dropdown may offer; empty hides the dropdown (design.md D5) #}
+{# @param string|null return_to validated local detections-list path to preserve across the review round-trip #}
+
+{% set return_to = return_to|default(null) %}
+{% set assignable_labels = assignable_labels|default([]) %}
+{% set bulk_form_id = bulk_form_id|default(null) %}
+<article data-detection-id="{{ detection.id }}"
+         class="flex items-center gap-4 rounded-xl border border-slate-200 bg-white p-3 shadow-sm">
+    {% if with_checkbox %}
+        <input type="checkbox" name="detection_ids[]" value="{{ detection.id }}"
+               {% if bulk_form_id %}form="{{ bulk_form_id }}"{% endif %}
+               aria-label="Select detection {{ detection.id }} for bulk classification"
+               class="h-4 w-4 shrink-0 rounded border-slate-300 text-emerald-600">
+    {% endif %}
+    {% if detection.snapshot %}
+        {% include 'detection/_box_overlay.html.twig' with {
+            detection: detection,
+            size_class: 'h-20 shrink-0',
+            return_to: return_to,
+        } only %}
+    {% endif %}
+    <div class="min-w-0 flex-1">
+        <div class="flex flex-wrap items-center gap-2">
+            <span class="rounded-full bg-slate-100 px-2 py-0.5 text-xs font-medium text-slate-700">
+                {{ detection.sourceClass ?? 'unknown' }}
+            </span>
+            {% if detection.origin.value == 'manual' %}
+                <span class="rounded-full bg-amber-100 px-2 py-0.5 text-xs font-medium text-amber-800">manual</span>
+            {% endif %}
+            {% set validity = detection.review ? detection.review.validity.value : 'unreviewed' %}
+            <span class="rounded-full px-2 py-0.5 text-xs font-medium
+                {{ validity == 'unreviewed' ? 'bg-slate-100 text-slate-500' }}
+                {{ validity == 'true_positive' ? 'bg-emerald-100 text-emerald-800' }}
+                {{ validity == 'false_positive' ? 'bg-rose-100 text-rose-800' }}
+                {{ validity == 'unsure' ? 'bg-amber-100 text-amber-800' }}">
+                {{ validity|replace({'_': ' '}) }}
+            </span>
+            {% if detection.review and detection.review.identityLabel %}
+                <span class="rounded-full bg-indigo-100 px-2 py-0.5 text-xs font-medium text-indigo-800">
+                    {{ detection.review.identityLabel.name }}
+                </span>
+            {% endif %}
+        </div>
+        {% if detection.confidence is not null %}
+            <p class="mt-1 text-xs text-slate-500">Confidence {{ (detection.confidence * 100)|round(1) }}%</p>
+        {% endif %}
+        {% if detection.review and detection.review.falsePositiveReason %}
+            <p class="mt-1 truncate text-xs text-slate-500">Reason: {{ detection.review.falsePositiveReason }}</p>
+        {% endif %}
+    </div>
+    <div class="relative shrink-0" data-controller="dropdown">
+        <div class="flex items-stretch">
+            <a href="{{ path('app_review_object', return_to ? { id: detection.id, return_to: return_to } : { id: detection.id }) }}"
+               class="{{ assignable_labels
+                   ? 'rounded-l-md border border-r-0 border-slate-300'
+                   : 'rounded-md border border-slate-300' }} px-3 py-1.5 text-sm font-medium text-slate-700 hover:bg-slate-100">
+                Review
+            </a>
+            {% if assignable_labels %}
+                <button type="button"
+                        data-dropdown-target="toggle"
+                        data-action="dropdown#toggle"
+                        aria-haspopup="true"
+                        aria-expanded="false"
+                        aria-label="Quick classification options for detection {{ detection.id }}"
+                        class="rounded-r-md border border-l-0 border-slate-300 px-2 text-slate-500 hover:bg-slate-100">
+                    <svg viewBox="0 0 20 20" fill="currentColor" class="h-4 w-4" aria-hidden="true">
+                        <path fill-rule="evenodd" d="M5.22 8.22a.75.75 0 0 1 1.06 0L10 11.94l3.72-3.72a.75.75 0 1 1 1.06 1.06l-4.25 4.25a.75.75 0 0 1-1.06 0L5.22 9.28a.75.75 0 0 1 0-1.06Z" clip-rule="evenodd" />
+                    </svg>
+                </button>
+                <div data-dropdown-target="menu" hidden
+                     class="absolute right-0 top-full z-20 mt-1 w-40 overflow-hidden rounded-md border border-slate-200 bg-white py-1 shadow-lg">
+                    {% for label in assignable_labels %}
+                        <form method="post"
+                              action="{{ path('app_detection_quick_classify', { id: detection.id }) }}">
+                            <input type="hidden" name="label" value="{{ label.id }}">
+                            <input type="hidden" name="return_to" value="{{ return_to }}">
+                            <button type="submit"
+                                    data-quick-classify-option="{{ label.name }}"
+                                    class="block w-full px-3 py-1.5 text-left text-sm text-slate-700 hover:bg-emerald-50 hover:text-emerald-800">
+                                {{ label.name }}
+                            </button>
+                        </form>
+                    {% endfor %}
+                </div>
+            {% endif %}
+        </div>
+    </div>
+</article>

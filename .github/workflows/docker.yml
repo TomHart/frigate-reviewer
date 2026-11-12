@@ -1,0 +1,75 @@
+# Build the Frigate Review image and push it to the private registry.
+#
+# Required repository secrets:
+#   DOCKER_REGISTRY_HOST — full image reference including the registry host,
+#       e.g. "registry.example.com/tom/frigate-review" or, when the image
+#       lives at the registry root, "registry.example.com:5000/frigate-review".
+#       The login step uses the part before the first "/" as the registry host.
+#   DOCKER_REGISTRY_USER — registry username.
+#   DOCKER_REGISTRY_PASS — registry password or access token.
+
+name: Docker
+
+on:
+  push:
+    branches:
+      - main
+    tags:
+      - 'v*.*.*'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+env:
+  IMAGE: ${{ secrets.DOCKER_REGISTRY_HOST }}
+
+jobs:
+  build-and-push:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check out the repository
+        uses: actions/checkout@v4
+
+      - name: Set up QEMU (arm64 image builds)
+        uses: docker/setup-qemu-action@v3
+
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v3
+
+      - name: Log in to the private registry
+        env:
+          REGISTRY_USER: ${{ secrets.DOCKER_REGISTRY_USER }}
+          REGISTRY_PASSWORD: ${{ secrets.DOCKER_REGISTRY_PASS }}
+        run: |
+          registry="${IMAGE%%/*}"
+          echo "Logging in to ${registry}"
+          echo "${REGISTRY_PASSWORD}" | docker login "${registry}" --username "${REGISTRY_USER}" --password-stdin
+
+      - name: Determine image tags
+        uses: docker/metadata-action@v5
+        id: meta
+        with:
+          images: ${{ env.IMAGE }}
+          tags: |
+            # Moving tag for the default branch
+            type=raw,value=latest,enable={{is_default_branch}}
+            # v1.2.3 -> 1.2.3 and 1.2
+            type=semver,pattern={{version}}
+            type=semver,pattern={{major}}.{{minor}}
+            # Exact commit the image was built from
+            type=sha
+
+      - name: Build and push the image
+        uses: docker/build-push-action@v6
+        with:
+          context: .
+          platforms: linux/amd64,linux/arm64
+          push: true
+          tags: ${{ steps.meta.outputs.tags }}
+          labels: ${{ steps.meta.outputs.labels }}
+          cache-from: type=gha
+          cache-to: type=gha,mode=max
+          build-args: |
+            PHP_VERSION=8.4
+            TAILWIND_VERSION=4.3.5

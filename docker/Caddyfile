@@ -1,0 +1,23 @@
+# FrankenPHP (Caddy + embedded PHP) serving the Symfony application.
+# Plain HTTP on :8080 — TLS termination, if ever needed, belongs to the
+# reverse proxy in front of this container, not inside it.
+{
+	admin off
+	auto_https off
+}
+
+:8080 {
+	root * /app/public
+
+	# Compress the built CSS/JS and HTML responses.
+	encode zstd gzip
+
+	# AssetMapper output is content-addressed and immutable per image, so
+	# it can be cached aggressively by browsers and intermediaries.
+	@static_assets path /assets/*
+	header @static_assets Cache-Control "public, max-age=604800"
+
+	# Serve real files directly (built CSS, compiled JS, favicons) and
+	# route everything else through the Symfony front controller.
+	php_server
+}

@@ -1,0 +1,9 @@
+doctrine:
+    dbal:
+        # Tests run against a fresh in-memory SQLite database: deterministic,
+        # isolated per booted kernel, and never touches the development or
+        # production database file. This literal overrides both the
+        # .env-provided DATABASE_URL and the "_test" dbname suffix from the
+        # base config.
+        url: 'sqlite:///:memory:'
+        dbname_suffix: ''

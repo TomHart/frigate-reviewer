@@ -1,0 +1,95 @@
+{# The per-object review form (task 4.4): validity, identity, false-positive
+   reason and reviewer notes — all editable at any time. Identity is filtered
+   to the kinds the object's Frigate source class accepts and is disabled when
+   validity is false positive (the server enforces the same rule). #}
+
+{# @param App\Entity\Detection detection #}
+{# @param App\Entity\Review|null review #}
+{# @param list<App\Entity\Label> labels #}
+{# @param string|null return_to validated local detections-list path; echoed back so the save can return to the filtered list #}
+
+{% set current_validity = review ? review.validity.value : 'unreviewed' %}
+
+<form method="post" action="{{ path('app_review_save', { id: detection.id }) }}"
+      data-controller="review-form"
+      class="flex flex-col gap-5 rounded-xl border border-slate-200 bg-white p-5 shadow-sm">
+    {% if return_to %}
+        {# Carried through so the save lands back on the filtered detections list. #}
+        <input type="hidden" name="return_to" value="{{ return_to }}">
+    {% endif %}
+    <div>
+        {% include 'review/_box_editor.html.twig' with {
+            snapshot_id: detection.snapshot.id,
+            original_box: detection.originalBox,
+            corrected_box: review ? review.correctedBox : null,
+        } only %}
+    </div>
+
+    <div class="grid gap-4 sm:grid-cols-2">
+        <label class="flex flex-col gap-1 text-sm font-medium text-slate-700">
+            Validity
+            <select name="validity"
+                    data-review-form-target="validity"
+                    data-action="review-form#onValidityChange"
+                    class="mt-0.5 rounded-md border-slate-300 text-sm text-slate-900">
+                {% for value in ['unreviewed', 'true_positive', 'false_positive', 'unsure'] %}
+                    <option value="{{ value }}" {% if current_validity == value %}selected{% endif %}>
+                        {{ value|replace({'_': ' '}) }}
+                    </option>
+                {% endfor %}
+            </select>
+        </label>
+
+        <label class="flex flex-col gap-1 text-sm font-medium text-slate-700">
+            Identity
+            <select name="identity_label_id"
+                    data-review-form-target="identity"
+                    class="mt-0.5 rounded-md border-slate-300 text-sm text-slate-900 disabled:bg-slate-100 disabled:text-slate-400">
+                <option value="">— no identity —</option>
+                {% for label in labels %}
+                    <option value="{{ label.id }}"
+                            {% if review and review.identityLabel and review.identityLabel.id == label.id %}selected{% endif %}>
+                        {{ label.name }}
+                    </option>
+                {% endfor %}
+            </select>
+            {% if labels is empty %}
+                <span class="text-xs font-normal text-slate-400">No labels match this object's source class.</span>
+            {% endif %}
+        </label>
+    </div>
+
+    <label class="flex flex-col gap-1 text-sm font-medium text-slate-700">
+        False-positive reason
+        <span data-controller="fp-reason-autocomplete"
+              data-fp-reason-autocomplete-url-value="{{ path('app_review_fp_reasons') }}"
+              class="relative block">
+            <input type="text"
+                   name="false_positive_reason"
+                   value="{{ review and review.falsePositiveReason ? review.falsePositiveReason : '' }}"
+                   autocomplete="off"
+                   placeholder="e.g. tree shadow"
+                   data-fp-reason-autocomplete-target="input"
+                   data-action="fp-reason-autocomplete#onInput"
+                   class="mt-0.5 w-full rounded-md border-slate-300 text-sm text-slate-900">
+            <ul data-fp-reason-autocomplete-target="list" hidden
+                class="absolute z-10 mt-1 w-full overflow-hidden rounded-md border border-slate-200 bg-white shadow-lg">
+            </ul>
+        </span>
+        <span class="text-xs font-normal text-slate-400">Free text; suggestions come from previously used reasons.</span>
+    </label>
+
+    <label class="flex flex-col gap-1 text-sm font-medium text-slate-700">
+        Reviewer notes
+        <textarea name="reviewer_notes" rows="3"
+                  class="mt-0.5 rounded-md border-slate-300 text-sm text-slate-900"
+                  placeholder="Anything worth remembering about this object">{{ review and review.reviewerNotes ? review.reviewerNotes : '' }}</textarea>
+    </label>
+
+    <div class="flex justify-end">
+        <button type="submit"
+                class="rounded-md bg-slate-900 px-4 py-2 text-sm font-medium text-white hover:bg-slate-700">
+            Save review
+        </button>
+    </div>
+</form>

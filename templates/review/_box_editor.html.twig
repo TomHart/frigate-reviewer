@@ -1,0 +1,66 @@
+{# The SVG bounding-box editor (task 4.3): renders the snapshot thumbnail with
+   an absolutely-positioned SVG overlay. The original Frigate box is drawn as a
+   dashed grey rectangle, the corrected box as a solid green one; the reviewer
+   drags on empty space to draw a new corrected box, drags inside it to move it
+   and drags its corner handles to resize it. Coordinates are normalized
+   0..1 (the SVG viewBox), matching BoundingBox. #}
+
+{# @param int snapshot_id #}
+{# @param App\Domain\BoundingBox|null original_box #}
+{# @param App\Domain\BoundingBox|null corrected_box #}
+
+<div data-controller="bbox-editor"
+     data-bbox-editor-original-box-value="{{ original_box ? "#{original_box.x},#{original_box.y},#{original_box.width},#{original_box.height}" : '' }}"
+     data-bbox-editor-corrected-box-value="{{ corrected_box ? "#{corrected_box.x},#{corrected_box.y},#{corrected_box.width},#{corrected_box.height}" : '' }}"
+     class="mx-auto w-fit select-none">
+    {# Inner wrapper keeps the SVG overlay sized to the image only, so the
+       clear button below it stays clickable. #}
+    <div class="relative">
+        <img src="{{ path('app_snapshot_thumbnail', { id: snapshot_id }) }}"
+             alt="Snapshot thumbnail"
+             draggable="false"
+             class="block max-w-full rounded-lg border border-slate-200 bg-white shadow-sm">
+        <svg data-bbox-editor-target="svg"
+             viewBox="0 0 1 1"
+             preserveAspectRatio="none"
+             class="absolute inset-0 h-full w-full cursor-crosshair touch-none">
+            <rect data-bbox-editor-target="originalRect"
+                  fill="none"
+                  stroke="#94a3b8"
+                  stroke-width="2"
+                  stroke-dasharray="0.03 0.02"
+                  vector-effect="non-scaling-stroke"
+                  visibility="hidden"></rect>
+            <rect data-bbox-editor-target="correctedRect"
+                  fill="rgba(16, 185, 129, 0.15)"
+                  stroke="#059669"
+                  stroke-width="2"
+                  vector-effect="non-scaling-stroke"
+                  visibility="hidden"></rect>
+        </svg>
+    </div>
+    <input type="hidden" name="box_x" data-bbox-editor-target="input" data-field="x">
+    <input type="hidden" name="box_y" data-bbox-editor-target="input" data-field="y">
+    <input type="hidden" name="box_width" data-bbox-editor-target="input" data-field="width">
+    <input type="hidden" name="box_height" data-bbox-editor-target="input" data-field="height">
+    <input type="hidden" name="box_clear" data-bbox-editor-target="clearInput" value="">
+    <div class="mt-2 flex justify-center">
+        <button type="button"
+                data-bbox-editor-target="clearButton"
+                data-action="bbox-editor#clear"
+                class="rounded-md border border-slate-300 bg-white px-2.5 py-1 text-xs font-medium text-slate-700 hover:bg-slate-100 disabled:cursor-not-allowed disabled:opacity-50">
+            Clear corrected box
+        </button>
+    </div>
+</div>
+<div class="mx-auto mt-2 flex w-fit flex-wrap items-center justify-center gap-x-4 gap-y-1 text-xs text-slate-500">
+    <span class="inline-flex items-center gap-1.5">
+        <span class="inline-block h-0 w-5 border-t-2 border-dashed border-slate-400" aria-hidden="true"></span>
+        Frigate original box
+    </span>
+    <span class="inline-flex items-center gap-1.5">
+        <span class="inline-block h-0 w-5 border-t-2 border-emerald-600" aria-hidden="true"></span>
+        Corrected box
+    </span>
+    <span class="inline-flex items-center gap-1.5">Drag on the image to draw, drag inside to move, drag a corner to resize.</span>
+</div>

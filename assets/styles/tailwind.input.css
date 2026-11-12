@@ -1,0 +1,12 @@
+/* Tailwind CSS 4 entry point, compiled by the standalone Tailwind CLI
+ * (bin/tailwindcss) at image-build time — see the "compile:css" composer script.
+ * The compiled output is assets/styles/app.built.css, which is what
+ * templates/base.html.twig links through AssetMapper. This input file is
+ * excluded from the asset mapper (config/packages/asset_mapper.yaml). */
+
+@import "tailwindcss";
+
+/* Explicit sources so the CLI scans the same trees regardless of the build
+ * machine's git setup. */
+@source "../../templates/**/*.twig";
+@source "../../assets/**/*.js";

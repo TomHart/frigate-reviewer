@@ -1,0 +1,96 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Review object #{{ detection.id }} — Frigate Review{% endblock %}
+
+{% block body %}
+    <main class="mx-auto max-w-3xl px-6 py-10">
+        <p class="mb-2">
+            {% if detection.event %}
+                <a href="{{ path('app_event_detail', { frigateEventId: detection.event.frigateEventId }) }}"
+                   class="text-sm text-slate-500 hover:text-slate-700">← Event {{ detection.event.frigateEventId }} on {{ detection.event.camera }}</a>
+            {% else %}
+                <a href="{{ path('app_detection_list') }}" class="text-sm text-slate-500 hover:text-slate-700">← All detections</a>
+            {% endif %}
+        </p>
+        <header class="mb-6">
+            <h1 class="text-3xl font-bold tracking-tight text-slate-900">
+                Review object #{{ detection.id }}
+                {% if detection.origin.value == 'manual' %}
+                    <span class="ml-2 rounded-full bg-amber-100 px-3 py-1 text-sm font-medium text-amber-800 align-middle">manual</span>
+                {% endif %}
+            </h1>
+        </header>
+
+        {% include 'review/_form.html.twig' with {
+            detection: detection,
+            review: review,
+            labels: labels,
+            return_to: return_to,
+        } only %}
+
+        <section class="mt-8 rounded-xl border border-slate-200 bg-white p-5 shadow-sm">
+            <h2 class="mb-3 text-lg font-semibold text-slate-900">Original Frigate facts</h2>
+            <p class="mb-3 text-xs text-slate-500">Synced from Frigate and immutable — never altered by reviews.</p>
+            <dl class="grid grid-cols-2 gap-x-4 gap-y-2 text-sm sm:grid-cols-3">
+                <dt class="text-slate-500">Camera</dt>
+                <dd class="text-slate-900">{{ detection.event ? detection.event.camera : '—' }}</dd>
+                <dt class="text-slate-500">Source class</dt>
+                <dd class="text-slate-900">{{ detection.sourceClass ?? '—' }}</dd>
+                <dt class="text-slate-500">Confidence</dt>
+                <dd class="text-slate-900">{{ detection.confidence is not null ? (detection.confidence * 100)|round(1) ~ '%' : '—' }}</dd>
+                <dt class="text-slate-500">Start</dt>
+                <dd class="text-slate-900">{{ detection.startTime ? detection.startTime|date('Y-m-d H:i:s') : '—' }}</dd>
+                <dt class="text-slate-500">End</dt>
+                <dd class="text-slate-900">{{ detection.endTime ? detection.endTime|date('Y-m-d H:i:s') : '—' }}</dd>
+                <dt class="text-slate-500">Original box</dt>
+                <dd class="font-mono text-slate-900">
+                    {% if detection.originalBox %}
+                        {{ '%.3f, %.3f, %.3f, %.3f'|format(detection.originalBox.x, detection.originalBox.y, detection.originalBox.width, detection.originalBox.height) }}
+                    {% else %}
+                        —
+                    {% endif %}
+                </dd>
+            </dl>
+        </section>
+
+        {# Per-object audit trail (task 6.2): every recorded change, newest
+           first — who, when, which field, previous value → new value. #}
+        <section class="mt-8 rounded-xl border border-slate-200 bg-white p-5 shadow-sm">
+            <h2 class="mb-3 text-lg font-semibold text-slate-900">Annotation history</h2>
+            <p class="mb-3 text-xs text-slate-500">Every recorded classification change and bounding-box edit, newest first.</p>
+            {% if auditEntries is empty %}
+                <p class="text-sm text-slate-500">No changes recorded yet.</p>
+            {% else %}
+                <ol data-audit-history class="flex flex-col gap-2">
+                    {% for entry in auditEntries %}
+                        <li class="flex flex-wrap items-baseline gap-x-2 gap-y-1 rounded-lg bg-slate-50 px-3 py-2 text-sm">
+                            <span class="font-medium text-slate-900">{{ entry.who }}</span>
+                            <time class="font-mono text-xs text-slate-400" datetime="{{ entry.occurredAt|date('c') }}">{{ entry.occurredAt|date('Y-m-d H:i:s') }}</time>
+                            <span class="rounded bg-slate-200 px-2 py-0.5 text-xs font-medium text-slate-700">{{ entry.field|replace({'_': ' '}) }}</span>
+                            <span class="text-slate-600">
+                                <span class="text-slate-400">{{ entry.previousValue ?? 'none' }}</span>
+                                <span aria-hidden="true">→</span>
+                                <span class="font-medium">{{ entry.newValue ?? 'none' }}</span>
+                            </span>
+                        </li>
+                    {% endfor %}
+                </ol>
+            {% endif %}
+        </section>
+
+        {# Permanent deletion (design.md D11, task 8.2): explicit, confirmed,
+           two-step flow — this links to the confirmation page which alone
+           hands out the token the POST requires. #}
+        <section class="mt-8 rounded-xl border border-rose-200 bg-rose-50 p-5">
+            <h2 class="mb-2 text-lg font-semibold text-rose-900">Danger zone</h2>
+            <p class="mb-4 text-sm text-rose-800">
+                Permanently deletes this image, its thumbnail, and every object annotated on it —
+                including reviews and annotation history. Cannot be undone.
+            </p>
+            <a href="{{ path('app_detection_delete_confirm', { id: detection.id }) }}"
+               class="inline-block rounded-md bg-rose-700 px-4 py-2 text-sm font-medium text-white hover:bg-rose-600">
+                Permanently delete image…
+            </a>
+        </section>
+    </main>
+{% endblock %}

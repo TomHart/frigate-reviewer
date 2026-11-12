@@ -1,0 +1,28 @@
+# Keep the build context small; everything here is either not needed in the
+# image or is produced inside the image build itself.
+.git
+.gitignore
+.editorconfig
+.github
+.openspec-cache
+openspec
+tests
+.phpunit.cache
+phpunit.dist.xml
+var
+vendor
+node_modules
+
+# Built at image build time — never ship build artifacts from the host.
+bin/tailwindcss
+assets/styles/app.built.css
+assets/vendor
+public/assets
+
+# Local-only environment overrides — never bake dev secrets or LAN-IP
+# comments into the image; production values are injected at runtime.
+.env
+.env.dev
+.env.test
+.env.local
+.env.*.local

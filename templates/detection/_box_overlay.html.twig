@@ -1,0 +1,37 @@
+{# Read-only overlay of a detection's boxes on its snapshot thumbnail:
+   dashed grey = original Frigate box, solid green = corrected box.
+   The image renders at the container height with its natural aspect ratio
+   (never cropped), inside a wrapper that hugs it; the box overlay stretches
+   over that wrapper, so normalized coordinates stay pixel-perfect for any
+   snapshot aspect ratio. Containers sized wider than the image (e.g. the
+   event page's square grid cells) letterbox around the centered image. #}
+
+{# @param App\Entity\Detection detection #}
+{# @param string size_class #}
+{# @param string|null return_to validated local detections-list path, absent when linked from the event page #}
+
+{% set return_to = return_to|default(null) %}
+{% set original_box = detection.originalBox %}
+{% set corrected_box = detection.review ? detection.review.correctedBox : null %}
+
+<a href="{{ path('app_review_object', return_to ? { id: detection.id, return_to: return_to } : { id: detection.id }) }}" class="{{ size_class }} relative flex items-center justify-center overflow-hidden rounded-md border border-slate-200 bg-white shadow-sm">
+    <span class="relative block h-full w-auto">
+        <img src="{{ path('app_snapshot_thumbnail', { id: detection.snapshot.id }) }}"
+             alt="Snapshot of detection {{ detection.id }}"
+             class="block h-full w-auto">
+        <svg viewBox="0 0 1 1" preserveAspectRatio="none" class="absolute inset-0 h-full w-full">
+        {% if original_box %}
+            <rect x="{{ original_box.x }}" y="{{ original_box.y }}"
+                  width="{{ original_box.width }}" height="{{ original_box.height }}"
+                  fill="none" stroke="#94a3b8" stroke-width="2" stroke-dasharray="0.03 0.02"
+                  vector-effect="non-scaling-stroke"></rect>
+        {% endif %}
+        {% if corrected_box %}
+            <rect x="{{ corrected_box.x }}" y="{{ corrected_box.y }}"
+                  width="{{ corrected_box.width }}" height="{{ corrected_box.height }}"
+                  fill="rgba(16, 185, 129, 0.15)" stroke="#059669" stroke-width="2"
+                  vector-effect="non-scaling-stroke"></rect>
+        {% endif %}
+    </svg>
+    </span>
+</a>
