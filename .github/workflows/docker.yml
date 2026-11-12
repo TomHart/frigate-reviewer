@@ -16,7 +16,19 @@ on:
       - main
     tags:
       - 'v*.*.*'
+    # Doc/spec-only changes never affect the image, so don't burn a build.
+    paths-ignore:
+      - 'openspec/**'
+      - '**.md'
+      - '.gitignore'
+      - '.dockerignore'
+      - 'LICENSE'
   workflow_dispatch:
+
+# Rapid pushes to the same ref supersede each other; cancel the stale run.
+concurrency:
+  group: docker-${{ github.ref }}
+  cancel-in-progress: true
 
 permissions:
   contents: read
@@ -29,13 +41,13 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Check out the repository
-        uses: actions/checkout@v4
+        uses: actions/checkout@v7
 
       - name: Set up QEMU (arm64 image builds)
-        uses: docker/setup-qemu-action@v3
+        uses: docker/setup-qemu-action@v4
 
       - name: Set up Docker Buildx
-        uses: docker/setup-buildx-action@v3
+        uses: docker/setup-buildx-action@v4
 
       - name: Log in to the private registry
         env:
@@ -47,7 +59,7 @@ jobs:
           echo "${REGISTRY_PASSWORD}" | docker login "${registry}" --username "${REGISTRY_USER}" --password-stdin
 
       - name: Determine image tags
-        uses: docker/metadata-action@v5
+        uses: docker/metadata-action@v6
         id: meta
         with:
           images: ${{ env.IMAGE }}
@@ -61,7 +73,7 @@ jobs:
             type=sha
 
       - name: Build and push the image
-        uses: docker/build-push-action@v6
+        uses: docker/build-push-action@v7
         with:
           context: .
           platforms: linux/amd64,linux/arm64
