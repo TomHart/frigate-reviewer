@@ -52,6 +52,13 @@ jobs:
           extensions: pdo_sqlite, gd, intl
           coverage: none
 
+      # .env is gitignored, but symfony/runtime's bootEnv() throws a
+      # PathException without it — both for composer's auto-scripts and for
+      # tests/bootstrap.php. Test DB is pinned to in-memory SQLite by
+      # config/packages/test/doctrine.yaml, so these values are placeholders.
+      - name: Create .env
+        run: printf 'APP_ENV=test\nAPP_SECRET=test-secret\nDATABASE_URL=sqlite:///:memory:\n' > .env
+
       - name: Install Composer dependencies
         run: composer install --prefer-dist --no-interaction --no-progress
 
