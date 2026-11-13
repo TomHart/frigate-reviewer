@@ -5,11 +5,11 @@
 {% block body %}
     <main class="mx-auto max-w-5xl px-6 py-10">
         <p class="mb-2">
-            <a href="{{ path('app_detection_list') }}" class="text-sm text-slate-500 hover:text-slate-700">← All detections</a>
+            <a href="{{ path('app_detection_list') }}" class="text-sm text-slate-500 hover:text-slate-700 dark:text-slate-400 dark:text-slate-200">← All detections</a>
         </p>
         <header class="mb-8">
-            <h1 class="text-3xl font-bold tracking-tight text-slate-900">Event on {{ event.camera }}</h1>
-            <p class="mt-1 text-sm text-slate-500">
+            <h1 class="text-3xl font-bold tracking-tight text-slate-900 dark:text-slate-100">Event on {{ event.camera }}</h1>
+            <p class="mt-1 text-sm text-slate-500 dark:text-slate-400 dark:text-slate-500">
                 Frigate event <span class="font-mono">{{ event.frigateEventId }}</span>
                 · {{ event.startTime|date('Y-m-d H:i:s') }}
                 {% if event.endTime %}– {{ event.endTime|date('H:i:s') }}{% endif %}
@@ -18,9 +18,9 @@
         </header>
 
         {% if snapshot %}
-            <section class="mb-10 rounded-xl border border-slate-200 bg-white p-5 shadow-sm">
-                <h2 class="mb-3 text-lg font-semibold text-slate-900">Add a missed object</h2>
-                <p class="mb-4 text-sm text-slate-500">
+            <section class="mb-10 rounded-xl border border-slate-200 bg-white p-5 shadow-sm dark:border-slate-800 dark:bg-slate-900">
+                <h2 class="mb-3 text-lg font-semibold text-slate-900 dark:text-slate-100">Add a missed object</h2>
+                <p class="mb-4 text-sm text-slate-500 dark:text-slate-400 dark:text-slate-500">
                     Frigate detected nothing here? Draw a box on the snapshot to add the object for review.
                 </p>
                 <form method="post" action="{{ path('app_manual_object_create', { frigateEventId: event.frigateEventId }) }}">
@@ -31,7 +31,7 @@
                     } only %}
                     <div class="mt-4 text-center">
                         <button type="submit"
-                                class="rounded-md bg-emerald-700 px-4 py-2 text-sm font-medium text-white hover:bg-emerald-600">
+                                class="rounded-md bg-emerald-700 px-4 py-2 text-sm font-medium text-white hover:bg-emerald-600 dark:bg-emerald-600 dark:hover:bg-emerald-500">
                             Add object
                         </button>
                     </div>
@@ -40,16 +40,16 @@
         {% endif %}
 
         <section>
-            <h2 class="mb-3 text-lg font-semibold text-slate-900">Objects in this event</h2>
+            <h2 class="mb-3 text-lg font-semibold text-slate-900 dark:text-slate-100">Objects in this event</h2>
             {% if detections is empty %}
-                <p class="rounded-xl border border-dashed border-slate-300 bg-white p-10 text-center text-slate-500">
+                <p class="rounded-xl border border-dashed border-slate-300 bg-white p-10 text-center text-slate-500 dark:border-slate-600 dark:bg-slate-900 dark:text-slate-400">
                     No detections belong to this event.
                 </p>
             {% endif %}
             <div class="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
                 {% for detection in detections %}
                     <article data-detection-id="{{ detection.id }}"
-                             class="flex flex-col gap-2 rounded-xl border border-slate-200 bg-white p-3 shadow-sm">
+                             class="flex flex-col gap-2 rounded-xl border border-slate-200 bg-white p-3 shadow-sm dark:border-slate-800 dark:bg-slate-900">
                         {% if detection.snapshot %}
                             {% include 'detection/_box_overlay.html.twig' with {
                                 detection: detection,
@@ -57,28 +57,28 @@
                             } only %}
                         {% endif %}
                         <div class="flex flex-wrap items-center gap-2">
-                            <span class="rounded-full bg-slate-100 px-2 py-0.5 text-xs font-medium text-slate-700">
+                            <span class="rounded-full bg-slate-100 px-2 py-0.5 text-xs font-medium text-slate-700 dark:bg-slate-800 dark:text-slate-200">
                                 {{ detection.sourceClass ?? 'unknown' }}
                             </span>
                             {% if detection.origin.value == 'manual' %}
-                                <span class="rounded-full bg-amber-100 px-2 py-0.5 text-xs font-medium text-amber-800">manual</span>
+                                <span class="rounded-full bg-amber-100 px-2 py-0.5 text-xs font-medium text-amber-800 dark:bg-amber-500/10 dark:text-amber-300">manual</span>
                             {% endif %}
                             {% set validity = detection.review ? detection.review.validity.value : 'unreviewed' %}
                             <span class="rounded-full px-2 py-0.5 text-xs font-medium
-                                {{ validity == 'unreviewed' ? 'bg-slate-100 text-slate-500' }}
-                                {{ validity == 'true_positive' ? 'bg-emerald-100 text-emerald-800' }}
-                                {{ validity == 'false_positive' ? 'bg-rose-100 text-rose-800' }}
-                                {{ validity == 'unsure' ? 'bg-amber-100 text-amber-800' }}">
+                                {{ validity == 'unreviewed' ? 'bg-slate-100 text-slate-500 dark:bg-slate-800 dark:text-slate-400' }}
+                                {{ validity == 'true_positive' ? 'bg-emerald-100 text-emerald-800 dark:bg-emerald-500/10 dark:text-emerald-300' }}
+                                {{ validity == 'false_positive' ? 'bg-rose-100 text-rose-800 dark:bg-rose-500/10 dark:text-rose-300' }}
+                                {{ validity == 'unsure' ? 'bg-amber-100 text-amber-800 dark:bg-amber-500/10 dark:text-amber-300' }}">
                                 {{ validity|replace({'_': ' '}) }}
                             </span>
                             {% if detection.review and detection.review.identityLabel %}
-                                <span class="rounded-full bg-indigo-100 px-2 py-0.5 text-xs font-medium text-indigo-800">
+                                <span class="rounded-full bg-indigo-100 px-2 py-0.5 text-xs font-medium text-indigo-800 dark:bg-indigo-500/10 dark:text-indigo-300">
                                     {{ detection.review.identityLabel.name }}
                                 </span>
                             {% endif %}
                         </div>
                         <a href="{{ path('app_review_object', { id: detection.id }) }}"
-                           class="mt-auto rounded-md border border-slate-300 px-3 py-1.5 text-center text-sm font-medium text-slate-700 hover:bg-slate-100">
+                           class="mt-auto rounded-md border border-slate-300 px-3 py-1.5 text-center text-sm font-medium text-slate-700 hover:bg-slate-100 dark:border-slate-600 dark:text-slate-200 dark:hover:bg-slate-800">
                             Review object
                         </a>
                     </article>

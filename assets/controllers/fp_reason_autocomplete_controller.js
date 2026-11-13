@@ -76,7 +76,7 @@ export default class extends Controller {
             button.textContent = suggestion.usage > 1
                 ? `${suggestion.reason} (used ${suggestion.usage}×)`
                 : suggestion.reason;
-            button.className = 'block w-full px-3 py-2 text-left text-sm text-slate-700 hover:bg-slate-100';
+            button.className = 'block w-full px-3 py-2 text-left text-sm text-slate-700 hover:bg-slate-100 dark:text-slate-200 dark:hover:bg-slate-700';
             button.addEventListener('pointerdown', (event) => {
                 event.preventDefault(); // Keep focus on the input.
                 this.choose(suggestion.reason);

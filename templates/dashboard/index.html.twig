@@ -15,40 +15,40 @@
 {% block body %}
 <main class="mx-auto max-w-5xl px-6 py-10">
     <header class="mb-8 flex items-baseline justify-between">
-        <h1 class="text-3xl font-bold tracking-tight text-slate-900">Dashboard</h1>
-        <span class="text-sm text-slate-500">Dataset quality</span>
+        <h1 class="text-3xl font-bold tracking-tight text-slate-900 dark:text-slate-100">Dashboard</h1>
+        <span class="text-sm text-slate-500 dark:text-slate-400 dark:text-slate-500">Dataset quality</span>
     </header>
 
     <section class="mb-10 grid grid-cols-2 gap-4 md:grid-cols-4">
-        <div class="rounded-xl border border-slate-200 bg-white p-5 shadow-sm">
-            <dt class="text-xs font-medium uppercase tracking-wide text-slate-500">Detections</dt>
-            <dd class="mt-1 text-3xl font-bold tabular-nums text-slate-900" data-total-detections="{{ stats.totalDetections }}">{{ stats.totalDetections }}</dd>
+        <div class="rounded-xl border border-slate-200 bg-white p-5 shadow-sm dark:border-slate-800 dark:bg-slate-900">
+            <dt class="text-xs font-medium uppercase tracking-wide text-slate-500 dark:text-slate-400 dark:text-slate-500">Detections</dt>
+            <dd class="mt-1 text-3xl font-bold tabular-nums text-slate-900 dark:text-slate-100" data-total-detections="{{ stats.totalDetections }}">{{ stats.totalDetections }}</dd>
         </div>
-        <div class="rounded-xl border border-slate-200 bg-white p-5 shadow-sm">
-            <dt class="text-xs font-medium uppercase tracking-wide text-slate-500">Frigate events</dt>
-            <dd class="mt-1 text-3xl font-bold tabular-nums text-slate-900" data-distinct-events="{{ stats.distinctFrigateEvents }}">{{ stats.distinctFrigateEvents }}</dd>
-            <p class="mt-1 text-xs text-slate-500">with at least one detection</p>
+        <div class="rounded-xl border border-slate-200 bg-white p-5 shadow-sm dark:border-slate-800 dark:bg-slate-900">
+            <dt class="text-xs font-medium uppercase tracking-wide text-slate-500 dark:text-slate-400 dark:text-slate-500">Frigate events</dt>
+            <dd class="mt-1 text-3xl font-bold tabular-nums text-slate-900 dark:text-slate-100" data-distinct-events="{{ stats.distinctFrigateEvents }}">{{ stats.distinctFrigateEvents }}</dd>
+            <p class="mt-1 text-xs text-slate-500 dark:text-slate-400 dark:text-slate-500">with at least one detection</p>
         </div>
-        <div class="rounded-xl border border-slate-200 bg-white p-5 shadow-sm">
-            <dt class="text-xs font-medium uppercase tracking-wide text-slate-500">Corrected boxes</dt>
-            <dd class="mt-1 text-3xl font-bold tabular-nums text-slate-900" data-corrected-boxes="{{ stats.correctedBoundingBoxes }}">{{ stats.correctedBoundingBoxes }}</dd>
-            <p class="mt-1 text-xs text-slate-500">manually drawn or edited</p>
+        <div class="rounded-xl border border-slate-200 bg-white p-5 shadow-sm dark:border-slate-800 dark:bg-slate-900">
+            <dt class="text-xs font-medium uppercase tracking-wide text-slate-500 dark:text-slate-400 dark:text-slate-500">Corrected boxes</dt>
+            <dd class="mt-1 text-3xl font-bold tabular-nums text-slate-900 dark:text-slate-100" data-corrected-boxes="{{ stats.correctedBoundingBoxes }}">{{ stats.correctedBoundingBoxes }}</dd>
+            <p class="mt-1 text-xs text-slate-500 dark:text-slate-400 dark:text-slate-500">manually drawn or edited</p>
         </div>
-        <div class="rounded-xl border border-slate-200 bg-white p-5 shadow-sm">
-            <dt class="text-xs font-medium uppercase tracking-wide text-slate-500">Cameras</dt>
-            <dd class="mt-1 text-3xl font-bold tabular-nums text-slate-900" data-camera-count="{{ stats.cameraCoverage|length }}">{{ stats.cameraCoverage|length }}</dd>
+        <div class="rounded-xl border border-slate-200 bg-white p-5 shadow-sm dark:border-slate-800 dark:bg-slate-900">
+            <dt class="text-xs font-medium uppercase tracking-wide text-slate-500 dark:text-slate-400 dark:text-slate-500">Cameras</dt>
+            <dd class="mt-1 text-3xl font-bold tabular-nums text-slate-900 dark:text-slate-100" data-camera-count="{{ stats.cameraCoverage|length }}">{{ stats.cameraCoverage|length }}</dd>
         </div>
     </section>
 
-    <section class="mb-10 rounded-xl border border-slate-200 bg-white p-6 shadow-sm">
-        <h2 class="mb-1 text-lg font-semibold text-slate-900">Review coverage per camera</h2>
-        <p class="mb-4 text-sm text-slate-500">Reviewed = validity other than unreviewed. False-positive rate is of reviewed objects.</p>
+    <section class="mb-10 rounded-xl border border-slate-200 bg-white p-6 shadow-sm dark:border-slate-800 dark:bg-slate-900">
+        <h2 class="mb-1 text-lg font-semibold text-slate-900 dark:text-slate-100">Review coverage per camera</h2>
+        <p class="mb-4 text-sm text-slate-500 dark:text-slate-400 dark:text-slate-500">Reviewed = validity other than unreviewed. False-positive rate is of reviewed objects.</p>
         {% if stats.cameraCoverage is empty %}
-            <p class="rounded-lg border border-dashed border-slate-300 p-6 text-center text-slate-500">No detections yet.</p>
+            <p class="rounded-lg border border-dashed border-slate-300 p-6 text-center text-slate-500 dark:border-slate-600 dark:text-slate-400">No detections yet.</p>
         {% else %}
             <table class="w-full text-sm">
                 <thead>
-                    <tr class="border-b border-slate-200 text-left text-xs font-medium uppercase tracking-wide text-slate-500">
+                    <tr class="border-b border-slate-200 text-left dark:border-slate-700 text-xs font-medium uppercase tracking-wide text-slate-500 dark:text-slate-400 dark:text-slate-500">
                         <th class="py-2">Camera</th>
                         <th class="py-2 text-right">Reviewed</th>
                         <th class="py-2 text-right">Unreviewed</th>
@@ -58,18 +58,18 @@
                 </thead>
                 <tbody>
                     {% for coverage in stats.cameraCoverage %}
-                        <tr class="border-b border-slate-100"
+                        <tr class="border-b border-slate-100 dark:border-slate-800"
                             data-camera-coverage="{{ coverage.camera }}"
                             data-reviewed="{{ coverage.reviewedCount }}"
                             data-unreviewed="{{ coverage.unreviewedCount }}"
                             data-false-positives="{{ coverage.falsePositiveCount }}"
                             data-false-positive-rate="{{ coverage.falsePositiveRate() ?? 'n/a' }}">
-                            <td class="py-2 font-medium text-slate-900">{{ coverage.camera }}</td>
-                            <td class="py-2 text-right tabular-nums text-emerald-700">{{ coverage.reviewedCount }}</td>
-                            <td class="py-2 text-right tabular-nums text-slate-600">{{ coverage.unreviewedCount }}</td>
-                            <td class="py-2 text-right tabular-nums text-slate-600">{{ coverage.falsePositiveCount }}</td>
-                            <td class="py-2 text-right tabular-nums text-slate-600">
-                                {% if coverage.falsePositiveRate() is null %}<span class="text-slate-400">n/a</span>{% else %}{{ coverage.falsePositiveRate() }}%{% endif %}
+                            <td class="py-2 font-medium text-slate-900 dark:text-slate-100">{{ coverage.camera }}</td>
+                            <td class="py-2 text-right tabular-nums text-emerald-700 dark:text-emerald-400">{{ coverage.reviewedCount }}</td>
+                            <td class="py-2 text-right tabular-nums text-slate-600 dark:text-slate-300">{{ coverage.unreviewedCount }}</td>
+                            <td class="py-2 text-right tabular-nums text-slate-600 dark:text-slate-300">{{ coverage.falsePositiveCount }}</td>
+                            <td class="py-2 text-right tabular-nums text-slate-600 dark:text-slate-300">
+                                {% if coverage.falsePositiveRate() is null %}<span class="text-slate-400 dark:text-slate-500">n/a</span>{% else %}{{ coverage.falsePositiveRate() }}%{% endif %}
                             </td>
                         </tr>
                     {% endfor %}
@@ -78,70 +78,70 @@
         {% endif %}
     </section>
 
-    <section class="mb-10 rounded-xl border border-slate-200 bg-white p-6 shadow-sm">
-        <h2 class="mb-1 text-lg font-semibold text-slate-900">Identity classes</h2>
-        <p class="mb-4 text-sm text-slate-500">True-positive and unsure objects only; a false positive never carries an identity. “Unidentified” = no identity assigned.</p>
+    <section class="mb-10 rounded-xl border border-slate-200 bg-white p-6 shadow-sm dark:border-slate-800 dark:bg-slate-900">
+        <h2 class="mb-1 text-lg font-semibold text-slate-900 dark:text-slate-100">Identity classes</h2>
+        <p class="mb-4 text-sm text-slate-500 dark:text-slate-400 dark:text-slate-500">True-positive and unsure objects only; a false positive never carries an identity. “Unidentified” = no identity assigned.</p>
         {% set maxIdentityCount = max(stats.identityCounts|map(identity => identity.count)) %}
         {% for identity in stats.identityCounts %}
             <div class="mb-2 flex items-center gap-3 text-sm" data-identity-count data-identity="{{ identity.name }}" data-count="{{ identity.count }}">
-                <span class="w-28 shrink-0 text-right {% if identity.unidentified %}italic text-slate-500{% else %}text-slate-700{% endif %}">{{ identity.name }}</span>
-                <div class="h-4 flex-1 rounded bg-slate-100">
-                    <div class="h-4 rounded {{ identity.unidentified ? 'bg-slate-400' : 'bg-indigo-500' }}"
+                <span class="w-28 shrink-0 text-right {% if identity.unidentified %}italic text-slate-500 dark:text-slate-400{% else %}text-slate-700 dark:text-slate-200{% endif %}">{{ identity.name }}</span>
+                <div class="h-4 flex-1 rounded bg-slate-100 dark:bg-slate-800">
+                    <div class="h-4 rounded {{ identity.unidentified ? 'bg-slate-400 dark:bg-slate-600' : 'bg-indigo-500' }}"
                          style="width: {{ maxIdentityCount > 0 ? (identity.count * 100 / maxIdentityCount)|round : 0 }}%"></div>
                 </div>
-                <span class="w-10 text-right font-medium tabular-nums text-slate-900">{{ identity.count }}</span>
+                <span class="w-10 text-right font-medium tabular-nums text-slate-900 dark:text-slate-100">{{ identity.count }}</span>
             </div>
         {% endfor %}
     </section>
 
-    <section class="mb-10 rounded-xl border border-slate-200 bg-white p-6 shadow-sm">
-        <h2 class="mb-1 text-lg font-semibold text-slate-900">False-positive reasons</h2>
-        <p class="mb-4 text-sm text-slate-500">Reviewer-entered reasons on false positives, most frequent first.</p>
+    <section class="mb-10 rounded-xl border border-slate-200 bg-white p-6 shadow-sm dark:border-slate-800 dark:bg-slate-900">
+        <h2 class="mb-1 text-lg font-semibold text-slate-900 dark:text-slate-100">False-positive reasons</h2>
+        <p class="mb-4 text-sm text-slate-500 dark:text-slate-400 dark:text-slate-500">Reviewer-entered reasons on false positives, most frequent first.</p>
         {% if stats.falsePositiveReasons is empty %}
-            <p class="rounded-lg border border-dashed border-slate-300 p-6 text-center text-slate-500">No false-positive reasons recorded.</p>
+            <p class="rounded-lg border border-dashed border-slate-300 p-6 text-center text-slate-500 dark:border-slate-600 dark:text-slate-400">No false-positive reasons recorded.</p>
         {% else %}
             {% set maxReasonCount = max(stats.falsePositiveReasons|map(reason => reason.count)) %}
             {% for reason in stats.falsePositiveReasons %}
                 <div class="mb-2 flex items-center gap-3 text-sm" data-reason-count data-reason="{{ reason.reason }}" data-count="{{ reason.count }}">
-                    <span class="w-40 shrink-0 truncate text-right text-slate-700" title="{{ reason.reason }}">{{ reason.reason }}</span>
-                    <div class="h-4 flex-1 rounded bg-slate-100">
+                    <span class="w-40 shrink-0 truncate text-right text-slate-700 dark:text-slate-200" title="{{ reason.reason }}">{{ reason.reason }}</span>
+                    <div class="h-4 flex-1 rounded bg-slate-100 dark:bg-slate-800">
                         <div class="h-4 rounded bg-rose-500" style="width: {{ maxReasonCount > 0 ? (reason.count * 100 / maxReasonCount)|round : 0 }}%"></div>
                     </div>
-                    <span class="w-10 text-right font-medium tabular-nums text-slate-900">{{ reason.count }}</span>
+                    <span class="w-10 text-right font-medium tabular-nums text-slate-900 dark:text-slate-100">{{ reason.count }}</span>
                 </div>
             {% endfor %}
         {% endif %}
     </section>
 
-    <section class="mb-10 rounded-xl border border-slate-200 bg-white p-6 shadow-sm">
-        <h2 class="mb-1 text-lg font-semibold text-slate-900">Confidence distribution</h2>
-        <p class="mb-4 text-sm text-slate-500">Frigate-reported confidences in 0.1-wide buckets; the last bucket is closed at 1.0.</p>
+    <section class="mb-10 rounded-xl border border-slate-200 bg-white p-6 shadow-sm dark:border-slate-800 dark:bg-slate-900">
+        <h2 class="mb-1 text-lg font-semibold text-slate-900 dark:text-slate-100">Confidence distribution</h2>
+        <p class="mb-4 text-sm text-slate-500 dark:text-slate-400 dark:text-slate-500">Frigate-reported confidences in 0.1-wide buckets; the last bucket is closed at 1.0.</p>
         {% set maxBucketCount = max(stats.confidenceBuckets|map(bucket => bucket.count)) %}
         {% for bucket in stats.confidenceBuckets %}
             <div class="mb-2 flex items-center gap-3 text-sm" data-confidence-bucket="{{ bucket.label }}" data-count="{{ bucket.count }}">
-                <span class="w-20 shrink-0 text-right tabular-nums text-slate-500">{{ bucket.label }}</span>
-                <div class="h-4 flex-1 rounded bg-slate-100">
+                <span class="w-20 shrink-0 text-right tabular-nums text-slate-500 dark:text-slate-400 dark:text-slate-500">{{ bucket.label }}</span>
+                <div class="h-4 flex-1 rounded bg-slate-100 dark:bg-slate-800">
                     <div class="h-4 rounded bg-sky-500" style="width: {{ maxBucketCount > 0 ? (bucket.count * 100 / maxBucketCount)|round : 0 }}%"></div>
                 </div>
-                <span class="w-10 text-right font-medium tabular-nums text-slate-900">{{ bucket.count }}</span>
+                <span class="w-10 text-right font-medium tabular-nums text-slate-900 dark:text-slate-100">{{ bucket.count }}</span>
             </div>
         {% endfor %}
     </section>
 
-    <section class="mb-10 rounded-xl border border-slate-200 bg-white p-6 shadow-sm">
-        <h2 class="mb-1 text-lg font-semibold text-slate-900">Detections over time</h2>
-        <p class="mb-4 text-sm text-slate-500">Per day of the Frigate event start time; days with no detections are omitted.</p>
+    <section class="mb-10 rounded-xl border border-slate-200 bg-white p-6 shadow-sm dark:border-slate-800 dark:bg-slate-900">
+        <h2 class="mb-1 text-lg font-semibold text-slate-900 dark:text-slate-100">Detections over time</h2>
+        <p class="mb-4 text-sm text-slate-500 dark:text-slate-400 dark:text-slate-500">Per day of the Frigate event start time; days with no detections are omitted.</p>
         {% if stats.detectionsPerDay is empty %}
-            <p class="rounded-lg border border-dashed border-slate-300 p-6 text-center text-slate-500">No detections yet.</p>
+            <p class="rounded-lg border border-dashed border-slate-300 p-6 text-center text-slate-500 dark:border-slate-600 dark:text-slate-400">No detections yet.</p>
         {% else %}
             {% set maxDayCount = max(stats.detectionsPerDay|map(day => day.count)) %}
             {% for day in stats.detectionsPerDay %}
                 <div class="mb-2 flex items-center gap-3 text-sm" data-day-count data-day="{{ day.day }}" data-count="{{ day.count }}">
-                    <span class="w-24 shrink-0 text-right tabular-nums text-slate-500">{{ day.day }}</span>
-                    <div class="h-4 flex-1 rounded bg-slate-100">
+                    <span class="w-24 shrink-0 text-right tabular-nums text-slate-500 dark:text-slate-400 dark:text-slate-500">{{ day.day }}</span>
+                    <div class="h-4 flex-1 rounded bg-slate-100 dark:bg-slate-800">
                         <div class="h-4 rounded bg-amber-500" style="width: {{ maxDayCount > 0 ? (day.count * 100 / maxDayCount)|round : 0 }}%"></div>
                     </div>
-                    <span class="w-10 text-right font-medium tabular-nums text-slate-900">{{ day.count }}</span>
+                    <span class="w-10 text-right font-medium tabular-nums text-slate-900 dark:text-slate-100">{{ day.count }}</span>
                 </div>
             {% endfor %}
         {% endif %}

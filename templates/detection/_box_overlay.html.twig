@@ -14,7 +14,7 @@
 {% set original_box = detection.originalBox %}
 {% set corrected_box = detection.review ? detection.review.correctedBox : null %}
 
-<a href="{{ path('app_review_object', return_to ? { id: detection.id, return_to: return_to } : { id: detection.id }) }}" class="{{ size_class }} relative flex items-center justify-center overflow-hidden rounded-md border border-slate-200 bg-white shadow-sm">
+<a href="{{ path('app_review_object', return_to ? { id: detection.id, return_to: return_to } : { id: detection.id }) }}" class="{{ size_class }} relative flex items-center justify-center overflow-hidden rounded-md border border-slate-200 bg-white shadow-sm dark:border-slate-700 dark:bg-slate-900">
     <span class="relative block h-full w-auto">
         <img src="{{ path('app_snapshot_thumbnail', { id: detection.snapshot.id }) }}"
              alt="Snapshot of detection {{ detection.id }}"
@@ -23,13 +23,15 @@
         {% if original_box %}
             <rect x="{{ original_box.x }}" y="{{ original_box.y }}"
                   width="{{ original_box.width }}" height="{{ original_box.height }}"
-                  fill="none" stroke="#94a3b8" stroke-width="2" stroke-dasharray="0.03 0.02"
+                  fill="none" stroke-width="2" stroke-dasharray="0.03 0.02"
+                  class="stroke-slate-400 dark:stroke-slate-300"
                   vector-effect="non-scaling-stroke"></rect>
         {% endif %}
         {% if corrected_box %}
             <rect x="{{ corrected_box.x }}" y="{{ corrected_box.y }}"
                   width="{{ corrected_box.width }}" height="{{ corrected_box.height }}"
-                  fill="rgba(16, 185, 129, 0.15)" stroke="#059669" stroke-width="2"
+                  stroke-width="2"
+                  class="fill-emerald-500/15 stroke-emerald-600 dark:stroke-emerald-400"
                   vector-effect="non-scaling-stroke"></rect>
         {% endif %}
     </svg>

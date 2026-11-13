@@ -6,32 +6,32 @@
     <main class="mx-auto max-w-2xl px-6 py-10">
         <p class="mb-2">
             <a href="{{ path('app_review_object', { id: detection.id }) }}"
-               class="text-sm text-slate-500 hover:text-slate-700">← Back to object #{{ detection.id }}</a>
+               class="text-sm text-slate-500 hover:text-slate-700 dark:text-slate-400 dark:text-slate-200">← Back to object #{{ detection.id }}</a>
         </p>
 
         <header class="mb-6">
-            <h1 class="text-3xl font-bold tracking-tight text-slate-900">Permanently delete this image?</h1>
-            <p class="mt-1 text-sm text-slate-500">This is the explicit, user-initiated permanent deletion. There are no backups and no tombstones.</p>
+            <h1 class="text-3xl font-bold tracking-tight text-slate-900 dark:text-slate-100">Permanently delete this image?</h1>
+            <p class="mt-1 text-sm text-slate-500 dark:text-slate-400 dark:text-slate-500">This is the explicit, user-initiated permanent deletion. There are no backups and no tombstones.</p>
         </header>
 
-        <section class="mb-6 rounded-xl border border-rose-200 bg-rose-50 p-5">
-            <h2 class="mb-3 text-lg font-semibold text-rose-900">What will be deleted</h2>
+        <section class="mb-6 rounded-xl border border-rose-200 bg-rose-50 p-5 dark:border-rose-500/30 dark:bg-rose-500/10">
+            <h2 class="mb-3 text-lg font-semibold text-rose-900 dark:text-rose-200">What will be deleted</h2>
             <dl class="grid grid-cols-2 gap-x-4 gap-y-2 text-sm">
-                <dt class="text-rose-800">Image</dt>
-                <dd class="font-mono text-rose-900">{{ snapshot.contentHash[:12] }}… (original file and thumbnail)</dd>
-                <dt class="text-rose-800">Stored</dt>
-                <dd class="text-rose-900">{{ snapshot.createdAt|date('Y-m-d H:i:s') }}</dd>
-                <dt class="text-rose-800">Objects on it</dt>
-                <dd class="text-rose-900">{{ sharedDetections|length }} (deleted, with all reviews and annotation history)</dd>
-                <dt class="text-rose-800">Frigate events</dt>
-                <dd class="text-rose-900">Any event left with no objects is deleted with them</dd>
+                <dt class="text-rose-800 dark:text-rose-300">Image</dt>
+                <dd class="font-mono text-rose-900 dark:text-rose-200">{{ snapshot.contentHash[:12] }}… (original file and thumbnail)</dd>
+                <dt class="text-rose-800 dark:text-rose-300">Stored</dt>
+                <dd class="text-rose-900 dark:text-rose-200">{{ snapshot.createdAt|date('Y-m-d H:i:s') }}</dd>
+                <dt class="text-rose-800 dark:text-rose-300">Objects on it</dt>
+                <dd class="text-rose-900 dark:text-rose-200">{{ sharedDetections|length }} (deleted, with all reviews and annotation history)</dd>
+                <dt class="text-rose-800 dark:text-rose-300">Frigate events</dt>
+                <dd class="text-rose-900 dark:text-rose-200">Any event left with no objects is deleted with them</dd>
             </dl>
-            <p class="mt-4 text-sm text-rose-800">
+            <p class="mt-4 text-sm text-rose-800 dark:text-rose-300">
                 Objects sharing this image are deleted together with it:
             </p>
             <ul class="mt-2 flex flex-wrap gap-2">
                 {% for shared in sharedDetections %}
-                    <li class="rounded-full bg-white px-3 py-0.5 text-xs font-medium text-rose-900 border border-rose-200">
+                    <li class="rounded-full bg-white px-3 py-0.5 text-xs font-medium text-rose-900 border border-rose-200 dark:bg-slate-900 dark:text-rose-300 dark:border-rose-500/30">
                         #{{ shared.id }} · {{ shared.sourceClass ?? 'manual' }} · {{ shared.event ? shared.event.camera : 'no camera' }}
                     </li>
                 {% endfor %}
@@ -42,11 +42,11 @@
               class="flex items-center justify-end gap-3">
             <input type="hidden" name="confirm_token" value="{{ confirmToken }}">
             <a href="{{ path('app_review_object', { id: detection.id }) }}"
-               class="rounded-md border border-slate-300 bg-white px-4 py-2 text-sm font-medium text-slate-700 hover:bg-slate-50">
+               class="rounded-md border border-slate-300 bg-white px-4 py-2 text-sm font-medium text-slate-700 hover:bg-slate-50 dark:border-slate-600 dark:bg-slate-900 dark:text-slate-200 dark:hover:bg-slate-800/50">
                 Cancel — keep everything
             </a>
             <button type="submit"
-                    class="rounded-md bg-rose-700 px-4 py-2 text-sm font-medium text-white hover:bg-rose-600">
+                    class="rounded-md bg-rose-700 px-4 py-2 text-sm font-medium text-white hover:bg-rose-600 dark:bg-rose-600 dark:hover:bg-rose-500">
                 Permanently delete — cannot be undone
             </button>
         </form>

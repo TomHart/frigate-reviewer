@@ -6,8 +6,8 @@
 {% set return_to = app.request.requestUri %}
 <main class="mx-auto max-w-5xl px-6 py-10">
     <header class="mb-6 flex items-baseline justify-between">
-        <h1 class="text-3xl font-bold tracking-tight text-slate-900">Detections</h1>
-        <span class="text-sm text-slate-500">{{ total }} object{{ total == 1 ? '' : 's' }}</span>
+        <h1 class="text-3xl font-bold tracking-tight text-slate-900 dark:text-slate-100">Detections</h1>
+        <span class="text-sm text-slate-500 dark:text-slate-400 dark:text-slate-500">{{ total }} object{{ total == 1 ? '' : 's' }}</span>
     </header>
 
     {# Toggle between the event-grouped listing and the "similar snapshots"
@@ -17,42 +17,42 @@
         <form method="post" action="{{ path('app_detection_sync') }}">
             <input type="hidden" name="return_to" value="{{ return_to }}">
             <button type="submit"
-                    class="rounded-md bg-emerald-700 px-3 py-2 text-sm font-medium text-white hover:bg-emerald-600">
+                    class="rounded-md bg-emerald-700 px-3 py-2 text-sm font-medium text-white hover:bg-emerald-600 dark:bg-emerald-600 dark:hover:bg-emerald-500">
                 Sync Events
             </button>
         </form>
         {% if similar %}
             <a href="{{ path('app_detection_list', app.request.query.all|merge({ similar: null })) }}"
-               class="text-sm font-medium text-slate-600 hover:text-slate-900">
+               class="text-sm font-medium text-slate-600 hover:text-slate-900 dark:text-slate-300 dark:text-slate-100">
                 ← Back to event-grouped list
             </a>
         {% else %}
             <a href="{{ path('app_detection_list', app.request.query.all|merge({ similar: '1', page: 1 })) }}"
-               class="text-sm font-medium text-emerald-700 hover:underline">
+               class="text-sm font-medium text-emerald-700 hover:underline dark:text-emerald-400">
                 Group similar snapshots →
             </a>
         {% endif %}
     </div>
 
     <form method="get" action="{{ path('app_detection_list') }}"
-          class="mb-8 grid grid-cols-2 gap-3 rounded-xl border border-slate-200 bg-white p-4 shadow-sm md:grid-cols-6">
-        <label class="flex flex-col gap-1 text-xs font-medium text-slate-600">
+          class="mb-8 grid grid-cols-2 gap-3 rounded-xl border border-slate-200 bg-white p-4 shadow-sm dark:border-slate-800 dark:bg-slate-900 md:grid-cols-6">
+        <label class="flex flex-col gap-1 text-xs font-medium text-slate-600 dark:text-slate-300">
             Camera
-            <select name="camera" class="mt-0.5 rounded-md border-slate-300 text-sm text-slate-900">
+            <select name="camera" class="mt-0.5 rounded-md border-slate-300 text-sm dark:border-slate-600 dark:bg-slate-950/50 text-slate-900 dark:text-slate-100">
                 <option value="">All cameras</option>
                 {% for camera in cameras %}
                     <option value="{{ camera }}" {% if filter.camera == camera %}selected{% endif %}>{{ camera }}</option>
                 {% endfor %}
             </select>
         </label>
-        <label class="flex flex-col gap-1 text-xs font-medium text-slate-600">
+        <label class="flex flex-col gap-1 text-xs font-medium text-slate-600 dark:text-slate-300">
             Date
             <input type="date" name="date" value="{{ filter.day ? filter.day|date('Y-m-d') : '' }}"
-                   class="mt-0.5 rounded-md border-slate-300 text-sm text-slate-900">
+                   class="mt-0.5 rounded-md border-slate-300 text-sm dark:border-slate-600 dark:bg-slate-950/50 text-slate-900 dark:text-slate-100">
         </label>
-        <label class="flex flex-col gap-1 text-xs font-medium text-slate-600">
+        <label class="flex flex-col gap-1 text-xs font-medium text-slate-600 dark:text-slate-300">
             Validity
-            <select name="validity" class="mt-0.5 rounded-md border-slate-300 text-sm text-slate-900">
+            <select name="validity" class="mt-0.5 rounded-md border-slate-300 text-sm dark:border-slate-600 dark:bg-slate-950/50 text-slate-900 dark:text-slate-100">
                 <option value="">Any validity</option>
                 {% for validity in ['unreviewed', 'true_positive', 'false_positive', 'unsure'] %}
                     <option value="{{ validity }}" {% if filter.validity and filter.validity.value == validity %}selected{% endif %}>
@@ -61,18 +61,18 @@
                 {% endfor %}
             </select>
         </label>
-        <label class="flex flex-col gap-1 text-xs font-medium text-slate-600">
+        <label class="flex flex-col gap-1 text-xs font-medium text-slate-600 dark:text-slate-300">
             Class
-            <select name="class" class="mt-0.5 rounded-md border-slate-300 text-sm text-slate-900">
+            <select name="class" class="mt-0.5 rounded-md border-slate-300 text-sm dark:border-slate-600 dark:bg-slate-950/50 text-slate-900 dark:text-slate-100">
                 <option value="">All classes</option>
                 {% for sourceClass in sourceClasses %}
                     <option value="{{ sourceClass }}" {% if filter.sourceClass == sourceClass %}selected{% endif %}>{{ sourceClass }}</option>
                 {% endfor %}
             </select>
         </label>
-        <label class="flex flex-col gap-1 text-xs font-medium text-slate-600">
+        <label class="flex flex-col gap-1 text-xs font-medium text-slate-600 dark:text-slate-300">
             Review state
-            <select name="review_state" class="mt-0.5 rounded-md border-slate-300 text-sm text-slate-900">
+            <select name="review_state" class="mt-0.5 rounded-md border-slate-300 text-sm dark:border-slate-600 dark:bg-slate-950/50 text-slate-900 dark:text-slate-100">
                 {# Default view is the review queue (unreviewed); "all" lifts the review-state condition. #}
                 {% set reviewStateParam = app.request.query.get('review_state', 'unreviewed') %}
                 <option value="all" {% if reviewStateParam == 'all' %}selected{% endif %}>All</option>
@@ -82,11 +82,11 @@
         </label>
         <div class="flex items-end gap-2">
             <button type="submit"
-                    class="rounded-md bg-slate-900 px-3 py-2 text-sm font-medium text-white hover:bg-slate-700">
+                    class="rounded-md bg-slate-900 px-3 py-2 text-sm font-medium text-white hover:bg-slate-700 dark:bg-slate-100 dark:text-slate-900 dark:hover:bg-slate-300">
                 Filter
             </button>
             <a href="{{ path('app_detection_list') }}"
-               class="rounded-md border border-slate-300 px-3 py-2 text-sm text-slate-600 hover:bg-slate-100">
+               class="rounded-md border border-slate-300 px-3 py-2 text-sm text-slate-600 hover:bg-slate-100 dark:border-slate-600 dark:text-slate-300 dark:hover:bg-slate-800">
                 Clear
             </a>
         </div>
@@ -100,7 +100,7 @@
            is reviewed and audited individually on submit (task 5.3). #}
 
         {% if similarGroups is empty %}
-            <p class="rounded-xl border border-dashed border-slate-300 bg-white p-10 text-center text-slate-500">
+            <p class="rounded-xl border border-dashed border-slate-300 bg-white p-10 text-center text-slate-500 dark:border-slate-600 dark:bg-slate-900 dark:text-slate-400">
                 No detections match filters.
             </p>
         {% else %}
@@ -110,13 +110,13 @@
             <form id="bulk-classify-form" method="post" action="{{ path('app_review_bulk') }}" class="mb-6" data-controller="bulk-classify">
                 {# After classifying, land back on this filtered view. #}
                 <input type="hidden" name="return_to" value="{{ return_to }}">
-                <div class="flex flex-wrap items-end gap-3 rounded-xl border border-slate-200 bg-white p-4 shadow-sm">
-                    <label class="flex flex-col gap-1 text-xs font-medium text-slate-600">
+                <div class="flex flex-wrap items-end gap-3 rounded-xl border border-slate-200 bg-white p-4 shadow-sm dark:border-slate-800 dark:bg-slate-900">
+                    <label class="flex flex-col gap-1 text-xs font-medium text-slate-600 dark:text-slate-300">
                         Validity
                         <select name="validity"
                                 data-bulk-classify-target="validity"
                                 data-action="bulk-classify#onValidityChange"
-                                class="mt-0.5 rounded-md border-slate-300 text-sm text-slate-900">
+                                class="mt-0.5 rounded-md border-slate-300 text-sm dark:border-slate-600 dark:bg-slate-950/50 text-slate-900 dark:text-slate-100">
                             {% for validity in ['false_positive', 'unreviewed', 'true_positive', 'unsure'] %}
                                 <option value="{{ validity }}" {% if validity == 'false_positive' %}selected{% endif %}>
                                     {{ validity|replace({'_': ' '}) }}
@@ -124,7 +124,7 @@
                             {% endfor %}
                         </select>
                     </label>
-                    <label class="flex min-w-64 flex-1 flex-col gap-1 text-xs font-medium text-slate-600"
+                    <label class="flex min-w-64 flex-1 flex-col gap-1 text-xs font-medium text-slate-600 dark:text-slate-300"
                            data-bulk-classify-target="reasonField">
                         False-positive reason
                         <span data-controller="fp-reason-autocomplete"
@@ -138,14 +138,14 @@
                                    data-fp-reason-autocomplete-target="input"
                                    data-bulk-classify-target="reasonInput"
                                    data-action="fp-reason-autocomplete#onInput"
-                                   class="mt-0.5 w-full rounded-md border-slate-300 text-sm text-slate-900">
+                                   class="mt-0.5 w-full rounded-md border-slate-300 text-sm dark:border-slate-600 dark:bg-slate-950/50 text-slate-900 dark:text-slate-100">
                             <ul data-fp-reason-autocomplete-target="list" hidden
-                                class="absolute z-10 mt-1 w-full overflow-hidden rounded-md border border-slate-200 bg-white shadow-lg">
+                                class="absolute z-10 mt-1 w-full overflow-hidden rounded-md border border-slate-200 bg-white shadow-lg dark:border-slate-700 dark:bg-slate-800">
                             </ul>
                         </span>
                     </label>
                     <button type="submit"
-                            class="rounded-md bg-slate-900 px-4 py-2 text-sm font-medium text-white hover:bg-slate-700">
+                            class="rounded-md bg-slate-900 px-4 py-2 text-sm font-medium text-white hover:bg-slate-700 dark:bg-slate-100 dark:text-slate-900 dark:hover:bg-slate-300">
                         Classify selected
                     </button>
                 </div>
@@ -156,10 +156,10 @@
                    group only; the button flips every checkbox the group's
                    cards render for the shared bulk-classify form. #}
                 <section data-controller="group-select"
-                         class="mb-6 rounded-xl border border-slate-200 bg-white p-4 shadow-sm">
-                    <h2 class="mb-3 flex items-baseline gap-3 border-b border-slate-200 pb-2">
-                        <span class="text-lg font-semibold text-slate-900">Similar snapshots</span>
-                        <span class="text-sm text-slate-500">
+                         class="mb-6 rounded-xl border border-slate-200 bg-white p-4 shadow-sm dark:border-slate-800 dark:bg-slate-900">
+                    <h2 class="mb-3 flex items-baseline gap-3 border-b border-slate-200 pb-2 dark:border-slate-800">
+                        <span class="text-lg font-semibold text-slate-900 dark:text-slate-100">Similar snapshots</span>
+                        <span class="text-sm text-slate-500 dark:text-slate-400 dark:text-slate-500">
                             {{ group|length }} object{{ group|length == 1 ? '' : 's' }}
                             · {{ group[0].event ? group[0].event.camera : 'no camera' }}
                             {% if group|length > 1 %}· presented together, nothing merged or deleted{% endif %}
@@ -168,7 +168,7 @@
                                 data-group-select-target="button"
                                 data-action="group-select#toggle"
                                 aria-pressed="false"
-                                class="ml-auto rounded-md border border-slate-300 px-3 py-1.5 text-sm font-medium text-slate-700 hover:bg-slate-100">
+                                class="ml-auto rounded-md border border-slate-300 px-3 py-1.5 text-sm font-medium text-slate-700 hover:bg-slate-100 dark:border-slate-600 dark:text-slate-200 dark:hover:bg-slate-800">
                             Select all
                         </button>
                     </h2>
@@ -190,7 +190,7 @@
     {% else %}
 
         {% if detections is empty %}
-            <p class="rounded-xl border border-dashed border-slate-300 bg-white p-10 text-center text-slate-500">
+            <p class="rounded-xl border border-dashed border-slate-300 bg-white p-10 text-center text-slate-500 dark:border-slate-600 dark:bg-slate-900 dark:text-slate-400">
                 No detections match filters.
             </p>
         {% endif %}
@@ -200,11 +200,11 @@
             {% for detection in detections %}
                 {% if detection.event and detection.event.id != lastEventId %}
                     {% set lastEventId = detection.event.id %}
-                    <h2 class="flex items-baseline gap-3 border-b border-slate-200 pb-1 pt-4 first:pt-0">
-                        <span class="text-lg font-semibold text-slate-900">{{ detection.event.camera }}</span>
-                        <span class="text-sm text-slate-500">{{ detection.event.startTime|date('Y-m-d H:i:s') }}</span>
+                    <h2 class="flex items-baseline gap-3 border-b border-slate-200 pb-1 pt-4 dark:border-slate-800 first:pt-0">
+                        <span class="text-lg font-semibold text-slate-900 dark:text-slate-100">{{ detection.event.camera }}</span>
+                        <span class="text-sm text-slate-500 dark:text-slate-400 dark:text-slate-500">{{ detection.event.startTime|date('Y-m-d H:i:s') }}</span>
                         <a href="{{ path('app_event_detail', { frigateEventId: detection.event.frigateEventId }) }}"
-                           class="ml-auto text-sm font-medium text-emerald-700 hover:underline">
+                           class="ml-auto text-sm font-medium text-emerald-700 hover:underline dark:text-emerald-400">
                             Event {{ detection.event.frigateEventId }} →
                         </a>
                     </h2>
@@ -225,14 +225,14 @@
         <nav class="mt-8 flex items-center justify-between text-sm">
             {% if page > 1 %}
                 <a href="{{ path('app_detection_list', app.request.query.all|merge({ page: page - 1 })) }}"
-                   class="rounded-md border border-slate-300 px-3 py-1.5 hover:bg-slate-100">← Previous</a>
+                   class="rounded-md border border-slate-300 px-3 py-1.5 hover:bg-slate-100 dark:border-slate-600 dark:hover:bg-slate-800">← Previous</a>
             {% else %}
                 <span></span>
             {% endif %}
-            <span class="text-slate-500">Page {{ page }} of {{ totalPages }}</span>
+            <span class="text-slate-500 dark:text-slate-400 dark:text-slate-500">Page {{ page }} of {{ totalPages }}</span>
             {% if page < totalPages %}
                 <a href="{{ path('app_detection_list', app.request.query.all|merge({ page: page + 1 })) }}"
-                   class="rounded-md border border-slate-300 px-3 py-1.5 hover:bg-slate-100">Next →</a>
+                   class="rounded-md border border-slate-300 px-3 py-1.5 hover:bg-slate-100 dark:border-slate-600 dark:hover:bg-slate-800">Next →</a>
             {% else %}
                 <span></span>
             {% endif %}
