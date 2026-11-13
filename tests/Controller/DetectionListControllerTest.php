@@ -259,6 +259,57 @@ final class DetectionListControllerTest extends AbstractDatabaseTestCase
         self::assertCount(0, $crawler->filter('[data-detection-id]'), 'The classified object must drop out of the unreviewed queue so the next one is on top.');
     }
 
+    public function testSimilarViewRendersPerGroupSelectAllToggle(): void
+    {
+        $this->bootDatabase();
+        $groupA = [
+            $this->createDetectionWithPerceptualHash('front_door', 'aaaaaaaaaaaaaaaa', new \DateTimeImmutable('2026-11-12 11:00:00')),
+            $this->createDetectionWithPerceptualHash('front_door', 'aaaaaaaaaaaaaaaa', new \DateTimeImmutable('2026-11-12 11:00:00')),
+        ];
+        $groupB = [$this->createDetectionWithPerceptualHash('back_garden', 'bbbbbbbbbbbbbbbb', new \DateTimeImmutable('2026-11-12 10:00:00'))];
+
+        $crawler = $this->client()->request('GET', '/detections?similar=1');
+
+        self::assertResponseIsSuccessful();
+
+        $groups = $crawler->filter('section[data-controller="group-select"]');
+        self::assertCount(2, $groups, 'Each similar-snapshot group scopes its own select-all controller.');
+
+        $checkboxValuesIn = static fn (Crawler $group): array => $group
+            ->filter('div[data-group-select-target="checkboxes"] input[type="checkbox"]')
+            ->each(static fn (Crawler $node) => $node->attr('value'));
+
+        $firstGroup = $groups->eq(0);
+        $secondGroup = $groups->eq(1);
+
+        self::assertSame(
+            array_map(static fn (Detection $detection) => (string) $detection->getId(), $groupA),
+            $checkboxValuesIn($firstGroup),
+            'A group checkbox area holds exactly that group’s detections.',
+        );
+        self::assertSame([(string) $groupB[0]->getId()], $checkboxValuesIn($secondGroup));
+
+        $selectButtons = $crawler->filter('button[data-group-select-target="button"]');
+        self::assertCount(2, $selectButtons, 'Exactly one select-all toggle per group.');
+
+        foreach ($selectButtons as $button) {
+            self::assertSame('group-select#toggle', $button->getAttribute('data-action'));
+            self::assertSame('false', $button->getAttribute('aria-pressed'));
+            self::assertSame('Select all', trim((string) $button->textContent));
+        }
+    }
+
+    public function testFlatListingHasNoGroupSelectMarkup(): void
+    {
+        $this->bootDatabase();
+        $this->createDetection(camera: 'front_door', sourceClass: 'person');
+
+        $crawler = $this->client()->request('GET', '/detections');
+
+        self::assertResponseIsSuccessful();
+        self::assertCount(0, $crawler->filter('[data-controller="group-select"]'));
+    }
+
     // -- fixtures -------------------------------------------------------------
 
     private function createDetection(
@@ -318,6 +369,19 @@ final class DetectionListControllerTest extends AbstractDatabaseTestCase
         $this->persist($snapshot);
 
         return $snapshot;
+    }
+
+    private function createDetectionWithPerceptualHash(
+        string $camera,
+        string $perceptualHash,
+        ?\DateTimeImmutable $startTime = null,
+    ): Detection {
+        $event = $this->createEvent($camera, $startTime ?? new \DateTimeImmutable('2026-11-12 10:00:00'));
+        $snapshot = $this->createSnapshot();
+        $snapshot->setPerceptualHash($perceptualHash);
+        $this->persist($snapshot);
+
+        return $this->createDetectionOn($event, $snapshot, 'person');
     }
 
     private function reviewService(): ReviewService
